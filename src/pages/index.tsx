@@ -1,12 +1,12 @@
 import { type NextPage } from "next";
 import Head from "next/head";
 import Link from "next/link";
+import { useForm } from "react-hook-form";
 
 import { api } from "~/utils/api";
 
 const Home: NextPage = () => {
   const hello = api.example.hello.useQuery({ text: "from tRPC" });
-
 
   return (
     <>
@@ -18,10 +18,31 @@ const Home: NextPage = () => {
       <main className="flex min-h-screen flex-col items-center justify-center bg-gradient-to-b from-[#2e026d] to-[#15162c]">
         <div className="container flex flex-col items-center justify-center gap-12 px-4 py-16 ">
           {hello.data?.greeting}
+          <FAQForm />
         </div>
       </main>
     </>
-  )
+  );
 };
 
+const FAQForm = () => {
+  const {
+    register,
+    handleSubmit,
+    watch,
+  } = useForm();
+  const onSubmit = (data: unknown) => console.log(data);
+
+  console.log(watch("example")); // watch input value by passing the name of it
+
+  return (
+    <form onSubmit={void handleSubmit(onSubmit)}>
+      <input defaultValue="test" {...register("example")} />
+
+      <input {...register("exampleRequired", { required: true })} />
+
+      <input type="submit" />
+    </form>
+  );
+};
 export default Home;
