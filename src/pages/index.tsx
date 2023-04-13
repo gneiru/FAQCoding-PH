@@ -1,19 +1,26 @@
-import { useSession } from "@clerk/nextjs";
+import { useSession, useUser } from "@clerk/nextjs";
+import { Loader2 } from "lucide-react";
 import { type NextPage } from "next";
 import Head from "next/head";
 import { z } from "zod";
+import { Button } from "~/ui/button";
 
 import {
   Dialog,
   DialogContent,
+  DialogDescription,
+  DialogTitle,
   DialogTrigger
 } from "~/ui/dialog";
+import { Label } from "~/ui/label";
+import { Textarea } from "~/ui/textarea";
 import { api } from "~/utils/api";
 import { useZodForm } from "~/utils/zod-form";
 
 const Home: NextPage = () => {
   const hello = api.example.hello.useQuery({ text: "from tRPC" });
-
+  const user = useUser();
+  console.log(user);
   return (
     <>
       <Head>
@@ -24,10 +31,11 @@ const Home: NextPage = () => {
       <main className="flex min-h-screen flex-col items-center justify-center bg-gray-800">
         <div className="container flex flex-col items-center justify-center gap-12 px-4 py-16 ">
           {hello.data?.greeting}
-          <FAQForm />
           <Dialog>
-            <DialogTrigger>Open</DialogTrigger>
+            <DialogTrigger className="border px-2 py-1.5 rounded-lg"><>Post a FAQ</></DialogTrigger>
             <DialogContent>
+              <DialogTitle>Post a FAQ</DialogTitle>
+              <DialogDescription>FAQ stands for Frequently Asked Question</DialogDescription>
               <FAQForm />
             </DialogContent>
           </Dialog>
@@ -68,13 +76,13 @@ function FAQForm() {
   );
 
   return (
-    <div className="mx-auto max-w-xl space-y-8">
       <form action="" className="flex flex-col gap-4" onSubmit={void onSubmit}>
         <div className="space-y-1">
-          <label htmlFor="name">Title</label>
-          <textarea
+          <Label htmlFor="name">Question</Label>
+          <Textarea
             id="name"
             className="bg-slate-800"
+            placeholder="What is my favorite programming language?"
             {...methods.register("question")}
           />
           <p className="font-medium text-red-500">
@@ -82,10 +90,11 @@ function FAQForm() {
           </p>
         </div>
         <div className="space-y-1">
-          <label htmlFor="text">Body</label>
-          <textarea
+          <Label htmlFor="text">Answer</Label>
+          <Textarea
             id="text"
             className="bg-slate-800"
+            placeholder="Jake++"
             {...methods.register("answer")}
           />
           <p className="font-medium text-red-500">
@@ -93,16 +102,15 @@ function FAQForm() {
           </p>
         </div>
 
-        <button type="submit" disabled={!isSignedIn}>
+        <Button type="submit" disabled={!isSignedIn}>
           {!isSignedIn
             ? "Sign in to Post"
             : createFAQ.isLoading
-            ? "Loading..."
+            ? <><Loader2 className="mr-2 h-4 w-4 animate-spin" /> <span>Loading ...</span></>
             : "Post"}
-        </button>
+        </Button>
         <p className="font-medium text-red-500">{createFAQ.error?.message}</p>
       </form>
-    </div>
   );
 }
 export default Home;
