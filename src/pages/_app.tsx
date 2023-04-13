@@ -10,7 +10,7 @@ const MyApp: AppType = ({ Component, pageProps }) => {
   return (
     <ClerkProvider {...pageProps}>
       <NavBar />
-      <div className="text-black dark:text-white">
+      <div className="text-black dark:text-white bg-slate-200 dark:bg-slate-800">
         <Component {...pageProps} />
 
       </div>
